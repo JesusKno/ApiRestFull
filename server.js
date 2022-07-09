@@ -12,6 +12,11 @@ routerApi.get('/productos', (req, res) => {
     res.send(productos)
 });
 
+routerApi.get('/producto', (req, res) => {
+    const response = getProduct(req.body);
+    res.json(response)
+});
+
 routerApi.post('/productos', (req, res) => {
     const response = addProduct(req.body);
     res.json(response)
@@ -19,6 +24,11 @@ routerApi.post('/productos', (req, res) => {
 
 routerApi.put('/update/productos', (req, res) => {
     const response = updateProduct(req.body);
+    res.json(response)
+});
+
+routerApi.delete('/delete/productos', (req, res) => {
+    const response = deleteProduct(req.body);
     res.json(response)
 });
 
@@ -33,13 +43,28 @@ server.on('error', error => console.log(`Errro en servidor ${error}`));
 
 function addProduct(product) {
     if (product) {
-        const id = productos.length + 1;
-        productos.push({
-            "id": id,
-            "title": product.title,
-            "price": product.price,
-            "thumbnail": product.thumbnail
-        });
+        if(productos.length != 0) {
+
+            const posicion = productos.length -1
+            const id = productos[posicion].id + 1;
+            productos.push({
+                "id": id,
+                "title": product.title,
+                "price": product.price,
+                "thumbnail": product.thumbnail
+            });
+
+        }else {
+
+            const id = productos.length + 1;
+            productos.push({
+                "id": id,
+                "title": product.title,
+                "price": product.price,
+                "thumbnail": product.thumbnail
+            });
+
+        }
 
         return productos
     }
@@ -47,14 +72,28 @@ function addProduct(product) {
 
 function updateProduct(product) {
     if (product) {
-        const productId = product.map((productId) = productId.id);
-        const index = productos.findIndex(id => id === productId)
-        productos[index].push({
-            "id": id,
-            "title": product.title,
-            "price": product.price,
-            "thumbnail": product.thumbnail
-        });
+        index = productos.findIndex((producto) => producto.id === product.id)
+        productos[index].id = product.id;
+        productos[index].title = product.title;
+        productos[index].price = product.price;
+        productos[index].thumbnail = product.thumbnail;
+
+        return productos
+    }
+}
+
+function deleteProduct(product) {
+    if (product) {
+        index = productos.findIndex((producto) => producto.id === product.id)
+        productos.splice(index, 1);
+
+        return productos
+    }
+}
+
+function getProduct(id) {
+    if (id) {
+        index = productos.findIndex((producto) => producto.id === id.id)
 
         return productos[index]
     }
